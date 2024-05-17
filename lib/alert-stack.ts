@@ -6,6 +6,7 @@ export class AlertStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+  //First hat: Infra provider or Framework team
     const topic = new cdk.aws_sns.Topic(this, "S3AlertAdi");
     const sub = new cdk.aws_sns_subscriptions.EmailSubscription('sp.aditya@gmail.com')
     topic.addSubscription(sub)
@@ -23,24 +24,10 @@ export class AlertStack extends cdk.Stack {
     })
 
     lam.addToRolePolicy(snspublish)
-    
-    const mys3 = new cdk.aws_s3.Bucket(this, 'mys3', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY
+    const lamname = new cdk.CfnOutput(this, 'alertlambdaname', {
+      value: lam.functionName,
+      exportName: 'alter-lambda-name'
     })
 
-    // const eventTypes : cdk.aws_s3.EventType[] = [
-    //   cdk.aws_s3.EventType.OBJECT_CREATED,
-    //   cdk.aws_s3.EventType.OBJECT_REMOVED
-    // ];
-
-    mys3.addEventNotification(
-          cdk.aws_s3.EventType.OBJECT_CREATED, 
-          new cdk.aws_s3_notifications.LambdaDestination(lam))
-    mys3.addEventNotification(
-      cdk.aws_s3.EventType.OBJECT_REMOVED,
-      new cdk.aws_s3_notifications.LambdaDestination(lam)
-    );
-
-    
   }
 }
